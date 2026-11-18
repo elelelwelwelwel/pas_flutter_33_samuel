@@ -1,0 +1,33 @@
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:pas_flutter_33_samuel/models/team_model.dart';
+
+class FeatPageController extends GetxController {
+  var isLoading = false.obs;
+  var listModel = Rxn<PremierLeagueModel>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    load();
+  }
+
+  void load() async {
+    try {
+      isLoading.value = true;
+      final url = Uri.parse("https://www.thesportsdb.com/api/v1/json/123/searchteams.php?t=Barcelona");
+      
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        listModel.value = premierLeagueModelFromJson(response.body);
+      } else {
+        Get.snackbar("Error", "Gagal mengambil data dari server");
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}
